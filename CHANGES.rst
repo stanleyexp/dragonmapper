@@ -2,6 +2,12 @@
 
 Change Log
 ----------
+0.4.0 (2016-06-14)
+++++++++++++++++++
+
+* Added Cantonese (Jyutping) support.
+* (Also added HTML support for Jyutping)
+
 
 0.3.0 (2016-05-27)
 ++++++++++++++++++
