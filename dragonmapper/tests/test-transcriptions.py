@@ -191,3 +191,10 @@ class TestConvertFunctions(unittest.TestCase):
         zhuyin = 'ㄛˊ'
 
         self.assertEqual(zhuyin, trans.pinyin_to_zhuyin(pinyin))
+
+    def test_eng_conversion(self):
+        pinyin = 'eng1'
+        zhuyin = 'ㄥ'
+
+        self.assertEqual(zhuyin, trans.pinyin_to_zhuyin(pinyin))
+
