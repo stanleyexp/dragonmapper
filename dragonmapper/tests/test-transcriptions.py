@@ -66,6 +66,7 @@ class TestConvertFunctions(unittest.TestCase):
     accented_pinyin_spaced = 'Wǒ shì yī gè měi guó rén.'
     zhuyin = 'ㄨㄛˇ ㄕˋ ㄧ ㄍㄜˋ ㄇㄟˇ ㄍㄨㄛˊ ㄖㄣˊ.'
     ipa = 'wɔ˧˩˧ ʂɨ˥˩ i˥ kɤ˥˩ meɪ˧˩˧ kwɔ˧˥ ʐən˧˥.'
+    ipa2 = 'wɔ3 ʂɨ4 i1 kɤ4 me3ɪ kwɔ2 ʐə2n.'
 
     def test_numbered_to_accented(self):
         accented_pinyin = trans.to_pinyin(self.numbered_pinyin)
@@ -84,6 +85,10 @@ class TestConvertFunctions(unittest.TestCase):
     def test_pinyin_to_ipa(self):
         self.assertEqual(trans.pinyin_to_ipa(self.accented_pinyin), self.ipa)
         self.assertEqual(trans.pinyin_to_ipa(self.numbered_pinyin), self.ipa)
+
+    def test_pinyin_to_ipa2(self):
+        self.assertEqual(trans.pinyin_to_ipa2(self.accented_pinyin), self.ipa2)
+        self.assertEqual(trans.pinyin_to_ipa2(self.numbered_pinyin), self.ipa2)
 
     def test_zhuyin_to_pinyin(self):
         self.assertEqual(trans.zhuyin_to_pinyin(self.zhuyin),
@@ -114,9 +119,11 @@ class TestConvertFunctions(unittest.TestCase):
     def test_drop_apostrophe(self):
         self.assertEqual(trans.pinyin_to_zhuyin("xi1'an1"), 'ㄒㄧ ㄢ')
         self.assertEqual(trans.pinyin_to_ipa("xi1'an1"), 'ɕi˥ an˥')
+        self.assertEqual(trans.pinyin_to_ipa2("xi1'an1"), 'ɕi1 a1n')
         self.assertEqual(trans.to_pinyin("xi1'an1"), "xī'ān")
         self.assertEqual(trans.pinyin_to_zhuyin("xī'ān"), 'ㄒㄧ ㄢ')
         self.assertEqual(trans.pinyin_to_ipa("xī'ān"), 'ɕi˥ an˥')
+        self.assertEqual(trans.pinyin_to_ipa2("xī'ān"), 'ɕi1 a1n')
         self.assertEqual(trans.to_pinyin("xī'ān", accented=False), "xi1'an1")
 
     def test_handle_middle_dot(self):
@@ -164,9 +171,11 @@ class TestConvertFunctions(unittest.TestCase):
         pinyin = 'zhuójìnr'
         zhuyin = 'ㄓㄨㄛˊ ㄐㄧㄣˋ ㄦ˙'
         ipa = 'ʈʂwɔ˧˥ tɕin˥˩ ɻ'
+        ipa2 = 'ʈʂwɔ2 tɕi4n ɻ'
 
         self.assertEqual(zhuyin, trans.pinyin_to_zhuyin(pinyin))
         self.assertEqual(ipa, trans.pinyin_to_ipa(pinyin))
+        self.assertEqual(ipa2, trans.pinyin_to_ipa2(pinyin))
 
     def test_issue_8(self):
         accented = 'Àodìlì'

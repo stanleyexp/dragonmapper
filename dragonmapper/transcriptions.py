@@ -252,6 +252,21 @@ def pinyin_syllable_to_ipa(s):
         raise ValueError('Not a valid syllable: %s' % s)
     return ipa_syllable + _IPA_TONES[tone]
 
+def match_vowel_tone(matchobj, tone):
+    if matchobj.group(0) == 'waɪ':
+        return 'wa{tone}ɪ'.format(tone=tone)
+    elif matchobj.group(0) == 'ɑʊ':
+        return 'ɑ{tone}ʊ'.format(tone=tone)
+    elif matchobj.group(0) == 'aɪ':
+        return 'a{tone}ɪ'.format(tone=tone)
+    elif matchobj.group(0) == 'oʊ':
+        return 'o{tone}ʊ'.format(tone=tone)
+    elif matchobj.group(0) == 'eɪ':
+        return 'e{tone}ɪ'.format(tone=tone)
+    else:
+        return matchobj.group(0) + tone
+
+        
 def pinyin_syllable_to_ipa2(s):
     """Convert Pinyin syllable *s* to an IPA syllable."""
     """Specify the position of the IPA tones(_IPA_TONES) based on rules"""
@@ -263,8 +278,42 @@ def pinyin_syllable_to_ipa2(s):
         raise ValueError('Not a valid syllable: %s' % s)
     if tone == '5':
         return ipa_syllable
-    return ipa_syllable + _IPA_TONES[tone]
+    """
+    waɪ -> wa[tone]ɪ
+    ɑʊ -> ɑ[tone]ʊ 
+    aɪ -> a[tone]ɪ
+    oʊ -> o[tone]ʊ
+    eɪ -> e[tone]ɪ 
+    wə -> wə[tone]
+    wɔ -> wɔ[tone]
+    a -> a[tone]
+    ɑ -> ɑ[tone]
+    e -> e[tone]
+    ə -> ə[tone]
+    ɤ -> ɤ[tone]
+    i -> i[tone]
+    ɛ -> ɛ[tone]
+    ɪ -> ɪ[tone]
+    ɔ -> ɔ[tone]
+    u -> u[tone]
+    ɚ -> ɚ[tone]
+    ɯ -> ɯ[tone]
+    y -> y[tone]
+    œ -> œ[tone]
 
+    Todo:
+    waɪ -> uaɪ
+    wə -> uə
+    wɔ -> uɔ
+    """
+    # pattern = r'(waɪ|ɑʊ|aɪ|oʊ|eɪ|wə|wɔ|a|ɑ|e|ə|ɤ|i|ɛ|ɪ|ɔ|u|ɚ|ɯ|y|œ)'
+    pattern = r'waɪ|ɑʊ|aɪ|oʊ|eɪ|wə|wɔ|a|ɑ|e|ə|ɤ|i|ɛ|ɪ|ɔ|u|ɚ|ɯ|y|œ'
+    ipa = re.sub(pattern,
+        lambda matchobj: match_vowel_tone(matchobj, tone), ipa_syllable)
+    # add tone to ipa which is not in this pattern
+    if re.search(r'\d', ipa) is None:
+        return ipa + tone
+    return ipa
 
 def _zhuyin_syllable_to_numbered(s):
     """Convert Zhuyin syllable *s* to a numbered Pinyin syllable."""
@@ -413,7 +462,7 @@ def pinyin_to_ipa2(s):
     apostrophes are removed.
 
     """
-    """Specify the position of the IPA tones(_IPA_TONES) based on rules"""
+    """Specify the position of the IPA tones(number format) based on rules"""
     return _convert(s, zhon.pinyin.syllable, pinyin_syllable_to_ipa2,
                     remove_apostrophes=True, separate_syllables=True)
 
