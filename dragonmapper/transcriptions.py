@@ -220,6 +220,19 @@ def accented_syllable_to_numbered(s):
     return _restore_case(numbered_syllable, case_memory) + tone
 
 
+def accented_syllable_to_numbered2(s):
+    """Convert accented Pinyin syllable *s* to a numbered Pinyin syllable."""
+    """replace tone='5' with tone='' """
+    if s[0] == '\u00B7':
+        lowercase_syllable, case_memory = _lower_case(s[1:])
+        lowercase_syllable = '\u00B7' + lowercase_syllable
+    else:
+        lowercase_syllable, case_memory = _lower_case(s)
+    numbered_syllable, tone = _parse_accented_syllable(lowercase_syllable)
+    if tone == '5':
+        return _restore_case(numbered_syllable, case_memory)
+    return _restore_case(numbered_syllable, case_memory) + tone
+
 def pinyin_syllable_to_zhuyin(s):
     """Convert Pinyin syllable *s* to a Zhuyin syllable."""
     pinyin_syllable, tone = _parse_pinyin_syllable(s)
@@ -237,6 +250,19 @@ def pinyin_syllable_to_ipa(s):
         ipa_syllable = _PINYIN_MAP[pinyin_syllable.lower()]['IPA']
     except KeyError:
         raise ValueError('Not a valid syllable: %s' % s)
+    return ipa_syllable + _IPA_TONES[tone]
+
+def pinyin_syllable_to_ipa2(s):
+    """Convert Pinyin syllable *s* to an IPA syllable."""
+    """Specify the position of the IPA tones(_IPA_TONES) based on rules"""
+    """replace tone='5' with tone='' """
+    pinyin_syllable, tone = _parse_pinyin_syllable(s)
+    try:
+        ipa_syllable = _PINYIN_MAP[pinyin_syllable.lower()]['IPA']
+    except KeyError:
+        raise ValueError('Not a valid syllable: %s' % s)
+    if tone == '5':
+        return ipa_syllable
     return ipa_syllable + _IPA_TONES[tone]
 
 
@@ -354,6 +380,11 @@ def accented_to_numbered(s):
     return _convert(s, zhon.pinyin.syllable, accented_syllable_to_numbered)
 
 
+def accented_to_numbered2(s):
+    """Convert all accented Pinyin syllables in *s* to numbered Pinyin."""
+    """Replace tone='5' with tone='' """
+    return _convert(s, zhon.pinyin.syllable, accented_syllable_to_numbered2)
+
 def pinyin_to_zhuyin(s):
     """Convert all Pinyin syllables in *s* to Zhuyin.
 
@@ -373,6 +404,17 @@ def pinyin_to_ipa(s):
 
     """
     return _convert(s, zhon.pinyin.syllable, pinyin_syllable_to_ipa,
+                    remove_apostrophes=True, separate_syllables=True)
+
+def pinyin_to_ipa2(s):
+    """Convert all Pinyin syllables in *s* to IPA.
+
+    Spaces are added between connected syllables and syllable-separating
+    apostrophes are removed.
+
+    """
+    """Specify the position of the IPA tones(_IPA_TONES) based on rules"""
+    return _convert(s, zhon.pinyin.syllable, pinyin_syllable_to_ipa2,
                     remove_apostrophes=True, separate_syllables=True)
 
 
